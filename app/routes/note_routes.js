@@ -17,18 +17,28 @@ function refreshJson(){
 module.exports = function(app, db) {
 //Signup
 app.post('/signup', (req, res) => {
+
     var user_data = {
     a_name: req.body.name,
     a_email: req.body.email,
 	  a_password:req.body.password
-};
+		};
+
 var user = new Users(user_data);
 user.save( function(error, data){
-    if(error)
-        res.json(error);
+    if(error){
+			jsonObj['flag']='f';
+			jsonObj['message']="User Already Exists"
+        res.send(jsonObj);
+			}
 	  else{
-				json=jsonObj.concat(json(data))
-        res.send("ok")
+			sess=req.session
+			sess.email=req.body.email
+			sess.name=req.body.name
+				jsonObj["session"]=sess
+				jsonObj['flag']='s'
+				jsonObj['message']="User Registered Succesfully"
+        res.send(jsonObj)
 			}
 });
 })
