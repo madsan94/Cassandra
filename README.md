@@ -7,6 +7,9 @@ Install express using npm
 
 Pull all the files and run npm install
 
+Before runnning server: Run python database_load.py in the directory NewProduct
+# It will populate the database.
+
 To run server node server.js
 
 To get the Routes, check ./app/routes/note_routes.js
