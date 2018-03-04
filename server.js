@@ -20,6 +20,7 @@ app.use(session({
 }));
 //To read URL encoded for
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
 //Get the default connection

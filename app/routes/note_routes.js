@@ -17,7 +17,7 @@ function refreshJson(){
 module.exports = function(app, db) {
 //Signup
 app.post('/signup', (req, res) => {
-
+	refreshJson()
     var user_data = {
     a_name: req.body.name,
     a_email: req.body.email,
@@ -47,7 +47,8 @@ user.save( function(error, data){
 app.post('/login',(req,res)=>{
 	refreshJson()
 var email_flag=validator.validate(req.body.email);
-if(email_flag===true){
+
+if(email_flag==true){
 Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,user){
 		if(err){
 		res.json(err);}
@@ -156,6 +157,7 @@ app.post('/add_vehicle',(req,res)=>{
 //Vehicle Details
 app.post('/show_vehicle',(req,res)=>{
 	refreshJson()
+	var child={}
 	sess=req.session;
 	if(sess.email){
 		Vehicle.find({email:sess.email},function(err,data){
@@ -165,14 +167,14 @@ app.post('/show_vehicle',(req,res)=>{
 				jsonObj['session']=sess;
 				jsonObj['flag']='s';
 				var a=[];
-				var b=[];
-				for(var i=0;i<data.length-1;i++){
 
-					a.push(data[i].vehicle_number)
-					b.push(data[i].vehicle_type)
+				for(var i=0;i<data.length-1;i++){
+				  child["vehicle_number"]=data[i].vehicle_number;
+					child["vehicle_type"]=data[i].vehicle_type;
+					a.push(child);
+
 				}
-				jsonObj["vehicle_number"]=a
-				jsonObj["vehicle_type"]=b
+				jsonObj["vehicle_details"]=a;
 
 				res.send(jsonObj)
 			}
