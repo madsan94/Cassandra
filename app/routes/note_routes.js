@@ -186,5 +186,32 @@ app.post('/show_vehicle',(req,res)=>{
 		res.send(jsonObj)
 	}
 })
+app.post('/stations',(req,res)=>{
+	refreshJson()
+	var child={}
+	Stations.find(function(err,data){var a={}
+	if(err)
+	res.json(err)
+	else{
+		var a=[]
+		jsonObj["flag"]='s'
+		jsonObj["message"]='Stations '+data.length
 
+		for(var i=0;i<data.length;i++)
+		{
+
+				child['station_name']=data[i].station_name;
+				child['Coordinates_loc']=data[i].Coordinates_loc;
+
+			a.push(child)
+			child={}
+
+	}
+
+jsonObj["stations"]=a;
+a={};
+res.send(jsonObj);
+}
+	})
+})
 }
