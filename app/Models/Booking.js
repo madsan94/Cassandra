@@ -6,12 +6,12 @@ var Schema = mongoose.Schema;
 
 var Booking = new Schema({
   email:String,
-  date:Date,
-  time:String,
-  Reference_ID:String,
-  Booking_ID:{type:String,unique:true}
+  date:String,
 
-});
+  Booking_ID:{type:String,unique:true},
+  station_id:String,
+  vehicle_id:String
+},{collection:'bookings'});
 
 // Compile model from schema
 module.exports  = mongoose.model('Booking', Booking );

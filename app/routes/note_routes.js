@@ -5,6 +5,7 @@ var Stations = require('../Models/Stations');
 var Vehicle = require('../Models/Vehicle');
 var Booking = require('../Models/Booking');
 var Payment = require('../Models/Payment');
+var dateTime = require('node-datetime');
 var jsonObj = {session: "none",
 							 flag: "f",
 							 message: "none"};
@@ -35,6 +36,7 @@ user.save( function(error, data){
 			sess=req.session
 			sess.email=req.body.email
 			sess.name=req.body.name
+
 				jsonObj["session"]=sess
 				jsonObj['flag']='s'
 				jsonObj['message']="User Registered Succesfully"
@@ -49,6 +51,7 @@ app.post('/login',(req,res)=>{
 var email_flag=validator.validate(req.body.email);
 
 if(email_flag==true){
+
 Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,user){
 		if(err){
 		res.json(err);}
@@ -58,12 +61,25 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 		res.send(jsonObj)
 	}
 		else{
+
 			sess=req.session;
+			var check_vehicle='s'
+			Vehicle.find({email:sess.email},function(err,data){
+				if(err){
+					res.json(err)
+				}
+				else{
+					if(data.length==0)
+					check_vehicle='f'
+				}
+			})
+			console.log("yeah")
 			sess.name=user[0].a_name;
 			sess.email=req.body.email;
 			jsonObj['flag']='s';
 			jsonObj['message']="Logged In";
 			jsonObj['session']=sess;
+			jsonObj['check_vehicle']=check_vehicle;
 			res.send(jsonObj);
 }
 });
@@ -96,35 +112,124 @@ jsonObj["message"]="Session Expired"
 })
 
 //Code Generator
-app.post('/generate_code',(req,res)=>{
+app.post('/booking',(req,res)=>{
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+if(dd<10) {
+    dd = '0'+dd
+}
+if(mm<10) {
+    mm = '0'+mm
+}
+
+today = dd + '/' + mm + '/' + yyyy;
+
 	refreshJson()
-	sess=req.session;
+	var dt = dateTime.create();
+	console.log(dt.now())
+	sess=req.session
 	if(sess.email){
-	var randomstring = require("randomstring");
-	var code=randomstring.generate(9);
-	jsonObj['flag']='s';
-	jsonObj['message']="Code Generated";
-	jsonObj['session']=sess;
-	jsonObj['code']=code;
-	res.send(jsonObj);
+		var user_data={
+			email:sess.email,
+			date:today,
+			station_id:req.body.station_id,
+			vehicle_id:req.body.vehicle_id
+		}
+		var booking = new Booking(user_data);
+		var ok=booking.save( function(error, data){
+
+		    if(error){
+					jsonObj['flag']='f';
+					jsonObj['message']="Booking cannot be taken"
+		        res.send(jsonObj);
+					}
+			  else{
+						console.log(ok)
+						jsonObj["session"]=sess
+						jsonObj['flag']='s'
+						jsonObj['Booking_ID']=data._id
+						jsonObj['message']="Booking Succesfull"
+		        res.send(jsonObj)
+					}
+})
 }
-else{
-	jsonObj['flag']='f'
-	jsonObj["message"]="Session Expired"
-	res.send(jsonObj)
-}
+
 })
 // Code Generator end
+// Show Bookings:
+app.post('/show_booking',(req,res)=>{
+	refreshJson()
+	sess=req.session;
+	var child={station_name:"",
+							vehicle_number:"",
+							vehicle_type:""}
+	if(sess.email){
+		Booking.find({email:sess.email},function(err,data){
+			if(err)
+			res.json(err)
+			else{
+				console.log("Booking Found")
+				jsonObj['session']=sess;
+				jsonObj['flag']='s';
+				var a=[];
+
+				for(var i=0;i<data.length;i++){
+					console.log(data.length)
+
+				 	Vehicle.find({_id:data[i].vehicle_id},function(err,data){
+						if(err)
+						res.json(err)
+						else{
+
+							child["vehicle_number"]=data[0].vehicle_number
+							child["vehicle_type"]=data[0].vehicle_type
+
+						}
+					})
+					Stations.find({_id:data[i].station_id},function(err,data){
+						if(err)
+						res.json(err)
+						else{
+
+							child["station_name"]=data[0].station_name
+
+
+						console.log(a)
+						}
+					})
+					a.push(child);
+					child={}
+				console.log(a)
+				}
+				console.log(a)
+				jsonObj["booking_details"]=a;
+
+				res.send(jsonObj)
+			}
+		})
+	}
+	else{
+		jsonObj['flag']='f'
+		jsonObj["message"]="Session Expired"
+		res.send(jsonObj)
+	}
+
+})
+
 
 //Add Vehicle
 app.post('/add_vehicle',(req,res)=>{
 	refreshJson()
 	sess=req.session;
 	if(sess.email){
+
 		Vehicle.find({email:sess.email,vehicle_number:req.body.vehicle_number},function(err,veh){
 		if(err)
 			res.json(err)
 		 if(veh.length!=0){
+			 console.log(veh)
 			 jsonObj['flag']='f';
 		 	jsonObj['message']="Vehicle Already Exists";
 		 	jsonObj['session']=sess;
@@ -157,8 +262,9 @@ app.post('/add_vehicle',(req,res)=>{
 //Vehicle Details
 app.post('/show_vehicle',(req,res)=>{
 	refreshJson()
-	var child={}
+
 	sess=req.session;
+	console.log(sess.email)
 	if(sess.email){
 		Vehicle.find({email:sess.email},function(err,data){
 			if(err)
@@ -168,11 +274,12 @@ app.post('/show_vehicle',(req,res)=>{
 				jsonObj['flag']='s';
 				var a=[];
 
-				for(var i=0;i<data.length-1;i++){
+				for(var i=0;i<data.length;i++){
+					var child={}
 				  child["vehicle_number"]=data[i].vehicle_number;
 					child["vehicle_type"]=data[i].vehicle_type;
 					a.push(child);
-
+					console.log(data[i])
 				}
 				jsonObj["vehicle_details"]=a;
 
@@ -202,7 +309,7 @@ app.post('/stations',(req,res)=>{
 
 				child['station_name']=data[i].station_name;
 				child['Coordinates_loc']=data[i].Coordinates_loc;
-
+				child['station_id']=data[i]._id
 			a.push(child)
 			child={}
 

@@ -2,10 +2,12 @@
 const express        = require('express');
 const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
+const dateTime = require('node-datetime');
+
 const session =require('express-session');
 const app= express();
 var mongoose = require('mongoose');
-var URL_DATABASE = 'mongodb://localhost:27017/newproduct'
+var URL_DATABASE = 'mongodb://sanket:biswas@ds253468.mlab.com:53468/newproduct'
 require('./app/Models/Users');
 require('./app/Models/Stations');
 require('./app/Models/Vehicle');
@@ -16,7 +18,9 @@ mongoose.connect(URL_DATABASE);
 const port = 8000;
 //For Session-Management
 app.use(session({
-  secret: "SessionTesting"
+  secret: "SessionTesting",
+  resave:true,
+  saveUninitialized: true
 }));
 //To read URL encoded for
 app.use(bodyParser.urlencoded({ extended: true }));
