@@ -85,7 +85,7 @@ Users.find({a_email:sess.email,a_password:req.body.password}, function(err,user)
 				else{
 					if(data.length==0)
 					{
-
+						console.log("all right")
 						sess.name=user[0].a_name;
 						sess.email=user[0].email;
 						jsonObj['flag']='s';
@@ -93,17 +93,20 @@ Users.find({a_email:sess.email,a_password:req.body.password}, function(err,user)
 						jsonObj['session']=sess;
 						jsonObj['check_vehicle']='f';
 						res.send(jsonObj);
-						console.log("yeah")
 
+
+					}
+					else{
+						jsonObj['flag']='s';
+						jsonObj['message']="Logged In";
+						jsonObj['session']=sess;
+						jsonObj['check_vehicle']='s';
+						res.send(jsonObj);
+						console.log("yeah");
 					}
 				}
 			})
-			jsonObj['flag']='s';
-			jsonObj['message']="Logged In";
-			jsonObj['session']=sess;
-			jsonObj['check_vehicle']='s';
-			res.send(jsonObj);
-			console.log("yeah");
+
 }
 });
 
