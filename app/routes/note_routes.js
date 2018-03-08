@@ -40,7 +40,7 @@ user.save( function(error, data){
         res.send(jsonObj);
 			}
 	  else{
-			sess=req.body.session
+			sess=req.session
 			sess.email=req.body.email
 			sess.name=req.body.name
 				console.log("ok")
@@ -56,11 +56,11 @@ user.save( function(error, data){
 app.post('/login',(req,res)=>{
 	refreshJson()
 console.log("ok")
-var email_flag=validator.validate(req.body.email);
+var email_flag=validator.validate(req.email);
 
 if(email_flag==true){
 
-Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,user){
+Users.find({a_email:req.email,a_password:req.password}, function(err,user){
 		if(err){
 		res.json(err);}
 		if(user.length==0){
@@ -71,7 +71,7 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 	}
 		else{
 
-			sess=req.body.session;
+			sess=req.session;
 
 			Vehicle.find({email:sess.email},function(err,data){
 				if(err){
@@ -87,7 +87,7 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 			})
 			console.log("yeah")
 			sess.name=user[0].a_name;
-			sess.email=req.body.email;
+			sess.email=req.email;
 			jsonObj['flag']='s';
 			jsonObj['message']="Logged In";
 			jsonObj['session']=sess;
