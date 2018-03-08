@@ -40,7 +40,7 @@ user.save( function(error, data){
         res.send(jsonObj);
 			}
 	  else{
-			sess=req.session
+			sess=req.body.session
 			sess.email=req.body.email
 			sess.name=req.body.name
 				console.log("ok")
@@ -71,7 +71,7 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 	}
 		else{
 
-			sess=req.session;
+			sess=req.body.session;
 
 			Vehicle.find({email:sess.email},function(err,data){
 				if(err){
@@ -106,7 +106,7 @@ else{
 //Forget password
 app.post('/change_password',(req,res)=>{
 	refreshJson()
-	sess=req.session
+	sess=req.body.session
 	if(sess.email){
 	var change={ $set: { a_password:req.body.password } };
 	Users.update({a_email:sess.email},change, function(err, data) {
@@ -141,7 +141,7 @@ today = dd + '/' + mm + '/' + yyyy;
 	refreshJson()
 	var dt = dateTime.create();
 	console.log(dt.now())
-	sess=req.session
+	sess=req.body.session
 	if(sess.email){
 		var user_data={
 			email:sess.email,
@@ -173,7 +173,7 @@ today = dd + '/' + mm + '/' + yyyy;
 // Show Bookings:
 app.post('/show_booking',(req,res)=>{
 	refreshJson()
-	sess=req.session;
+	sess=req.body.session;
 	var child={station_name:"",
 							vehicle_number:"",
 							vehicle_type:""}
@@ -234,7 +234,7 @@ app.post('/show_booking',(req,res)=>{
 //Add Vehicle
 app.post('/add_vehicle',(req,res)=>{
 	refreshJson()
-	sess=req.session;
+	sess=req.body.session;
 	if(sess.email){
 
 		Vehicle.find({email:sess.email,vehicle_number:req.body.vehicle_number},function(err,veh){
@@ -275,7 +275,7 @@ app.post('/add_vehicle',(req,res)=>{
 app.post('/show_vehicle',(req,res)=>{
 	refreshJson()
 
-	sess=req.session;
+	sess=req.body.session;
 	console.log(sess.email)
 	if(sess.email){
 		Vehicle.find({email:sess.email},function(err,data){
