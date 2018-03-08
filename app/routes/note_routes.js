@@ -40,7 +40,7 @@ user.save( function(error, data){
         res.send(jsonObj);
 			}
 	  else{
-			sess=req.session
+			var sess=req.session
 			sess.email=req.body.email
 			sess.name=req.body.name
 				console.log("ok")
@@ -55,23 +55,28 @@ user.save( function(error, data){
 // Login-Session homepage
 app.post('/login',(req,res)=>{
 	refreshJson()
-console.log("ok")
-var email_flag=validator.validate(req.email);
-
+	jsonObj["check_vehicle"]='f'
+console.log(req.body.email)
+var email_flag=validator.validate(req.body.email);
+var sess=req.session;
+sess.email=req.body.email
+sess.name=req.body.name
+console.log(sess.email)
 if(email_flag==true){
-
-Users.find({a_email:req.email,a_password:req.password}, function(err,user){
+console.log("ok")
+Users.find({a_email:sess.email,a_password:req.body.password}, function(err,user){
 		if(err){
 		res.json(err);}
 		if(user.length==0){
-
+			console.log(user)
 		jsonObj['flag']='f'
 		jsonObj["message"]="Invalid Username or Password"
+
 		res.send(jsonObj)
 	}
 		else{
 
-			sess=req.session;
+
 
 			Vehicle.find({email:sess.email},function(err,data){
 				if(err){
@@ -81,20 +86,27 @@ Users.find({a_email:req.email,a_password:req.password}, function(err,user){
 					if(data.length==0)
 					{
 
-						addVehicle()
+						sess.name=user[0].a_name;
+						sess.email=user[0].email;
+						jsonObj['flag']='s';
+						jsonObj['message']="Logged In";
+						jsonObj['session']=sess;
+						jsonObj['check_vehicle']='f';
+						res.send(jsonObj);
+						console.log("yeah")
+
 					}
 				}
 			})
-			console.log("yeah")
-			sess.name=user[0].a_name;
-			sess.email=req.email;
 			jsonObj['flag']='s';
 			jsonObj['message']="Logged In";
 			jsonObj['session']=sess;
-			jsonObj['check_vehicle']=check_vehicle;
+			jsonObj['check_vehicle']='s';
 			res.send(jsonObj);
+			console.log("yeah");
 }
 });
+
 }
 else{
 	jsonObj['flag']='f'
@@ -144,27 +156,36 @@ today = dd + '/' + mm + '/' + yyyy;
 	sess=req.body.session
 	if(sess.email){
 		var user_data={
+			amount:req.body.amount,
 			email:sess.email,
 			date:today,
 			station_id:req.body.station_id,
-			vehicle_id:req.body.vehicle_id
+			vehicle_number:req.body.vehicle_number
 		}
-		var booking = new Booking(user_data);
-		var ok=booking.save( function(error, data){
+		Stations.find({_id:req.body.station_id},function(err,data){
+				 if(err)
 
-		    if(error){
-					jsonObj['flag']='f';
-					jsonObj['message']="Booking cannot be taken"
-		        res.send(jsonObj);
-					}
-			  else{
-						console.log(ok)
-						jsonObj["session"]=sess
-						jsonObj['flag']='s'
-						jsonObj['Booking_ID']=data._id
-						jsonObj['message']="Booking Succesfull"
-		        res.send(jsonObj)
-					}
+				 res.json(err)
+				 else{
+					 user_data["station_name"]=data[0].station_name
+					 var booking = new Booking(user_data);
+					 booking.save( function(error, data){
+						 if(error){
+							 	 jsonObj['flag']='f';
+								 jsonObj['message']="Booking cannot be taken"
+								 res.json(error);
+								 }
+							 else{
+
+									 jsonObj["session"]=sess
+									 jsonObj['flag']='s'
+									 jsonObj['Booking_ID']=data._id
+									 jsonObj['message']="Booking Succesfull"
+									 res.send(jsonObj)
+								 }
+
+			 })
+}
 })
 }
 
@@ -175,8 +196,8 @@ app.post('/show_booking',(req,res)=>{
 	refreshJson()
 	sess=req.body.session;
 	var child={station_name:"",
-							vehicle_number:"",
-							vehicle_type:""}
+							vehicle_number:""
+							}
 	if(sess.email){
 		Booking.find({email:sess.email},function(err,data){
 			if(err)
@@ -188,36 +209,18 @@ app.post('/show_booking',(req,res)=>{
 				var a=[];
 
 				for(var i=0;i<data.length;i++){
-					console.log(data.length)
+					child["station_name"]=data[i].station_name
+					child["vehicle_number"]=data[i].vehicle_number
+					child["date"]=data[i].date
+					child["amount"]=data[i].amount
+					child["Booking_ID"]=data[i]._id
 
-				 	Vehicle.find({_id:data[i].vehicle_id},function(err,data){
-						if(err)
-						res.json(err)
-						else{
-
-							child["vehicle_number"]=data[0].vehicle_number
-							child["vehicle_type"]=data[0].vehicle_type
-
-						}
-					})
-					Stations.find({_id:data[i].station_id},function(err,data){
-						if(err)
-						res.json(err)
-						else{
-
-							child["station_name"]=data[0].station_name
-
-
-						console.log(a)
-						}
-					})
 					a.push(child);
 					child={}
 				console.log(a)
 				}
 				console.log(a)
 				jsonObj["booking_details"]=a;
-
 				res.send(jsonObj)
 			}
 		})

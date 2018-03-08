@@ -7,10 +7,10 @@ var Schema = mongoose.Schema;
 var Booking = new Schema({
   email:String,
   date:String,
-
-  Booking_ID:{type:String,unique:true},
+  amount:String,
   station_id:String,
-  vehicle_id:String
+  vehicle_number:String,
+  station_name:String
 },{collection:'bookings'});
 
 // Compile model from schema
