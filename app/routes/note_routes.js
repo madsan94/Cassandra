@@ -1,4 +1,5 @@
 var validator = require("email-validator");
+var fs = require("fs");
 var mongoose = require('mongoose');
 var Users = require('../Models/Users');
 var Stations = require('../Models/Stations');
@@ -6,6 +7,7 @@ var Vehicle = require('../Models/Vehicle');
 var Booking = require('../Models/Booking');
 var Payment = require('../Models/Payment');
 var dateTime = require('node-datetime');
+var check_vehicle='s'
 var jsonObj = {session: "none",
 							 flag: "f",
 							 message: "none"};
@@ -15,7 +17,12 @@ function refreshJson(){
 								 flag: "f",
 								 message: "none"};
 }
+function addVehicle(){
+	check_vehicle='f'
+}
+
 module.exports = function(app, db) {
+
 //Signup
 app.post('/signup', (req, res) => {
 	refreshJson()
@@ -36,7 +43,7 @@ user.save( function(error, data){
 			sess=req.session
 			sess.email=req.body.email
 			sess.name=req.body.name
-
+				console.log("ok")
 				jsonObj["session"]=sess
 				jsonObj['flag']='s'
 				jsonObj['message']="User Registered Succesfully"
@@ -48,6 +55,7 @@ user.save( function(error, data){
 // Login-Session homepage
 app.post('/login',(req,res)=>{
 	refreshJson()
+console.log("ok")
 var email_flag=validator.validate(req.body.email);
 
 if(email_flag==true){
@@ -56,6 +64,7 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 		if(err){
 		res.json(err);}
 		if(user.length==0){
+
 		jsonObj['flag']='f'
 		jsonObj["message"]="Invalid Username or Password"
 		res.send(jsonObj)
@@ -63,14 +72,17 @@ Users.find({a_email:req.body.email,a_password:req.body.password}, function(err,u
 		else{
 
 			sess=req.session;
-			var check_vehicle='s'
+
 			Vehicle.find({email:sess.email},function(err,data){
 				if(err){
 					res.json(err)
 				}
 				else{
 					if(data.length==0)
-					check_vehicle='f'
+					{
+
+						addVehicle()
+					}
 				}
 			})
 			console.log("yeah")
@@ -294,6 +306,7 @@ app.post('/show_vehicle',(req,res)=>{
 	}
 })
 app.post('/stations',(req,res)=>{
+	console.log("okman")
 	refreshJson()
 	var child={}
 	Stations.find(function(err,data){var a={}
@@ -308,8 +321,9 @@ app.post('/stations',(req,res)=>{
 		{
 
 				child['station_name']=data[i].station_name;
-				child['Coordinates_loc']=data[i].Coordinates_loc;
-				child['station_id']=data[i]._id
+				child['latitude']=data[i].latitude;
+				child['longitude']=data[i].longitude;
+				child['station_id']=data[i]._id;
 			a.push(child)
 			child={}
 

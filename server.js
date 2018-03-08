@@ -34,6 +34,6 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
   require('./app/routes')(app, db);
-  app.listen(port, () => {
+  app.listen(port,() => {
     console.log('We are live on ' + port);
 });

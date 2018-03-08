@@ -5,15 +5,17 @@ db = client['newproduct']
 collection = db['stations']
 print(collection)
 i=0
-a="19.125362"
-b="72.999199"
-while(i<5):
+lat="19.125362"
+lng="72.999199"
+while(i<10):
     station={
     "station_name":"Ghansoli"+str(i),
-    "Coordinates_loc":[a,b]
+    "longitude":lat,
+    "latitude":lng
     }
     collection.insert(station)
-    a=str(float(a)+5)
-    b=str(float(b)-5)
+    offset = i / 60.0
+    lat = str(float(lat) + offset)
+    lng = str(float(lng) + offset)
     i+=1
 print("ok")
