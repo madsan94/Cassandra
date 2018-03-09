@@ -15,7 +15,8 @@ require('./app/Models/Booking');
 require('./app/Models/Payment');
 mongoose.connect(URL_DATABASE);
 // Initializing port to listen to HTTP Requests
-const port = 8000;
+const port = process.env.PORT || 8000
+app.engine('html', require('ejs').renderFile);
 //For Session-Management
 app.use(session({
   secret: "SessionTesting",
@@ -32,8 +33,8 @@ var db = mongoose.connection;
 
 //Bind connection to error event (to get notification of connection errors)
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
+console.log("That is okay")
   require('./app/routes')(app, db);
-  app.listen(port,() => {
+  app.listen(port,"0.0.0.0",function(){
     console.log('We are live on ' + port);
 });

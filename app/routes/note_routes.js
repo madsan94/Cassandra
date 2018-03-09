@@ -22,7 +22,10 @@ function addVehicle(){
 }
 
 module.exports = function(app, db) {
-
+app.get('/', (req, res)=> {
+	console.log(res.status)
+		res.render('index.html');
+	});
 //Signup
 app.post('/signup', (req, res) => {
 	refreshJson()
@@ -60,7 +63,6 @@ console.log(req.body.email)
 var email_flag=validator.validate(req.body.email);
 var sess=req.session;
 sess.email=req.body.email
-sess.name=req.body.name
 console.log(sess.email)
 if(email_flag==true){
 console.log("ok")
@@ -87,7 +89,7 @@ Users.find({a_email:sess.email,a_password:req.body.password}, function(err,user)
 					{
 						console.log("all right")
 						sess.name=user[0].a_name;
-						sess.email=user[0].email;
+						sess.email=user[0].a_email;
 						jsonObj['flag']='s';
 						jsonObj['message']="Logged In";
 						jsonObj['session']=sess;
@@ -97,6 +99,8 @@ Users.find({a_email:sess.email,a_password:req.body.password}, function(err,user)
 
 					}
 					else{
+						sess.name=user[0].a_name;
+						sess.email=user[0].a_email;
 						jsonObj['flag']='s';
 						jsonObj['message']="Logged In";
 						jsonObj['session']=sess;
