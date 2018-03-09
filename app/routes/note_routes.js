@@ -381,4 +381,35 @@ else{
 }
 
 })
+
+//Payment Route
+app.post('/payment',(req,res)=>{
+	sess=req.session
+	refreshJson
+	payment_details={}
+	if(sess.email){
+		payment["email"]=sess.email
+		payment["card_number"]=req.body.card_details
+		payment["Amount"]=req.body.amount
+		payment["expiry"]=req.body.expiry
+		payment["cvv"]=req.body.cvv
+		var payment = new Payment(payment_details);
+	payment.save(function(error,data){
+		if(error)
+		res.json(error)
+		else{
+			jsonObj["flag"]='s'
+			jsonObj["message"]="Payment Succesfull"
+			res.send(jsonObj)
+
+		}
+	})
+
+}
+else{
+	jsonObj[flag]='f'
+	jsonObj[message]="Session Expired"
+	res.send(jsonObj)
+}
+})
 }

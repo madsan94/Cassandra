@@ -1,4 +1,18 @@
 // server.js
+//**************************************//
+//App Name: Cassesndra
+//Date: 10th March, 2018
+//API Server v1.1 Cassendra App
+//Owner: Sanket biswas
+//Status: Moved to Production
+
+//Live at https://cassendra.herokuapp.com/
+//Mongo Database live at  mongodb://sanket:biswas@ds253468.mlab.com:53468/newproduct
+
+//Status: Moved to Production
+
+//**************************************//
+
 const express        = require('express');
 const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
@@ -7,8 +21,8 @@ const dateTime = require('node-datetime');
 const session =require('express-session');
 const app= express();
 var mongoose = require('mongoose');
-//var URL_DATABASE = process.env.PROD_MONGODB;
-var URL_DATABASE="mongodb://sanket:biswas@ds253468.mlab.com:53468/newproduct"
+var URL_DATABASE = process.env.PROD_MONGODB;
+//var URL_DATABASE="mongodb://sanket:biswas@ds253468.mlab.com:53468/newproduct"
 
 require('./app/Models/Users');
 require('./app/Models/Stations');

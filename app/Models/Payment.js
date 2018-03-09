@@ -6,8 +6,10 @@ var Schema = mongoose.Schema;
 
 var Payment = new Schema({
   email:String,
-  Reference_ID:String,
-  Amount:String
+  card_number:String,
+  expiry:String,
+  Amount:String,
+  cvv:String
 
 });
 
