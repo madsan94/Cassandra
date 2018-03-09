@@ -384,7 +384,7 @@ else{
 
 //Payment Route
 app.post('/payment',(req,res)=>{
-	sess=req.session
+	sess=req.body.session
 	refreshJson
 	payment_details={}
 	if(sess.email){
