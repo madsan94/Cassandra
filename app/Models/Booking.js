@@ -10,7 +10,9 @@ var Booking = new Schema({
   amount:String,
   station_id:String,
   vehicle_number:String,
-  station_name:String
+  station_name:String,
+  longitude:String,
+  latitude:String
 },{collection:'bookings'});
 
 // Compile model from schema

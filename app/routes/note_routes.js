@@ -169,12 +169,14 @@ today = dd + '/' + mm + '/' + yyyy;
 			station_id:req.body.station_id,
 			vehicle_number:req.body.vehicle_number
 		}
-		Stations.find({_id:req.body.station_id},function(err,data){
+		Stations.find({_id:req.body.station_id},function(err,station){
 				 if(err)
 
 				 res.json(err)
 				 else{
-					 user_data["station_name"]=data[0].station_name
+					 user_data["station_name"]=station[0].station_name
+					 user_data['latitude']=station[0].latitude
+					 user_data['longitude']=station[0].longitude
 					 var booking = new Booking(user_data);
 					 booking.save( function(error, data){
 						 if(error){
@@ -344,5 +346,39 @@ a={};
 res.send(jsonObj);
 }
 	})
+})
+
+//Current Booking
+app.post('/currentbooking',(req,res)=>{
+	refreshJson()
+	sess=req.body.session
+	if(sess.email)
+	{
+	Booking.find({Booking_ID:req.booking_id},function(err,data){
+		if(err)
+		res.json(err)
+		else{
+			jsonObj["station_name"]=data[0].station_name
+			jsonObj["vehicle_number"]=data[0].vehicle_number
+			jsonObj["date"]=data[0].date
+			jsonObj["amount"]=data[0].amount
+			jsonObj["Booking_ID"]=data[0]._id
+			jsonObj["latitude"]=data[0].latitude;
+			jsonObj["longitude"]=data[0].longitude
+			jsonObj["session"]=sess
+			jsonObj["flag"]='s'
+			jsonObj["message"]="Current Location..."
+			console.log(data[0].longitude)
+			res.send(jsonObj)
+		}
+	})
+}
+else{
+	jsonObj['flag']='f'
+	jsonObj["message"]="Session Expired"
+	res.send(jsonObj)
+
+}
+
 })
 }
