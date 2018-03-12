@@ -1,18 +1,180 @@
-html
-head
-   title Person
-   body
-      form(action = "/person", method = "POST")
-      div
-         label(for = "name") Name:
-         input(name = "name")
-      br
-      div
-         label(for = "age") Age:
-         input(name = "age")
-      br
-      div
-         label(for = "nationality") Nationality:
-         input(name = "nationality")
-      br
-      button(type = "submit") Create new person
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>API Specs</title>
+    <style>
+    a{
+      color:#486692;
+      padding-left:20px;
+    }
+    h2{
+      color:#3b3c3b;
+    }
+    h3{
+      color:#3b3c3b;
+    }
+    p{
+      display: block;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 20px;
+
+
+    }
+
+    .intro{
+      padding: 25px,25px,25px,25px;
+      font-family:    Arial, Helvetica, sans-serif;
+
+    }
+    .codes{
+      background-color: #3b3c3b;
+      color:#cbd3cb;
+      font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+
+    }
+    .sidebar{
+      position: fixed;
+       box-shadow: 3px 3px 5px 6px #ccc;
+       width:200px;
+
+    }
+    .line-style{
+      border-top: 3px double #8c8b8b;
+    }
+
+    </style>
+  </head>
+
+  <body>
+
+      <div class="container">
+<div class="row">
+    <div class="col-lg-10">
+        <div class id="intro"></br>
+        <h2>Introduction</h2>
+        <p>
+          There is no definitive way to design an API -- it mostly comes down to industry best practices, the developer's previous experience & taste, and specific project requirements. While there have been a handful of attempts to standardize the design of JSON based API's, none have gained critical adoption across the entire development community. JSON API is one proposed standard, but many developers feel that it is verbose and is better suited for large organizations.
+It's not just about creating endpoints; it's also about creating standard data structures, status codes, error handlers, and naming schemes that will be consistently used for transmitting & receiving data.
+<p>Designing an API usually comes in two steps:<p>
+  <ul>
+<li>1. Specifying uniform data structures, status codes, error handlers, and naming schemes that are consistently used across the API</li>
+<li>2. Creating intuitive endpoints to transact those data structures, status codes, and error handlers<p></li>
+</ul>
+
+      </div>
+    </br>
+    <div class="error" id="error">
+    <h2>Error</h2>
+      <p>Before we can start designing any API endpoints, we need to create a standard for returning error messages and what status codes are being used. Above all, error handling should be consistent across the entire application. This allows other developers to easily reason about what might be going wrong in their codebases.</p>
+    </br>
+    <div class= "codes">
+   &nbsp    {</br>
+	&nbsp “errors”:{</br>
+		&nbsp &nbsp“body”:[</br>
+			&nbsp &nbsp“ErrorMessage”:”Validation Error”,</br>
+			&nbsp &nbsp“StatusCode”:”422”</br>
+			&nbsp &nbsp &nbsp]</br>
+		&nbsp &nbsp &nbsp}</br>
+	&nbsp }</br>
+    </div>
+  </br>
+</br/>
+<h3>Other status codes:</h3>
+    <ul>
+<li>401 for Unauthorized requests, when a request requires authentication but it isn't provided</li>
+<li>403 for Forbidden requests, when a request may be valid but the user doesn't have permissions to perform the action</li>
+<li>404 for Not found requests, when a resource can't be found to fulfill the request</li>
+</ul>
+      </div>
+      <div class="user" id="user">
+        <h2>User Definition</h2>
+        <p>In any application, a user has a username, image, bio, email and a password. We shouldn't
+        ever return a password from the server, but the other fields (plus their JWT token)
+        (I am using jwt authentication) should be returned.</br>
+
+Let's create a desired object to represent the user's data. This data is what will be returned from successful
+logins, registrations, and requests for the currently logged in user's information (which we'll
+cover right after this</p>
+<div class="codes">
+&nbsp  &nbsp{</br>
+ &nbsp"user": {</br>
+  &nbsp&nbsp"email": "www.snk94@gmail.com",</br>
+  &nbsp&nbsp"token": "jwt.token.here",</br>
+  &nbsp&nbsp"username": "Sanket",</br>
+  &nbsp&nbsp"bio": "I work in Reliance",</br>
+  &nbsp&nbsp"image": null(should not be null)</br>
+  &nbsp&nbsp}</br>
+&nbsp}</br>
+</div>
+<h3>Registration</h3>
+<p>To register, we require an email, password, and desired username:<p>
+  <p><br>POST /api/users<br><p>
+<div class="codes">
+  &nbsp{</br>
+ &nbsp&nbsp"user":{</br>
+  &nbsp&nbsp"username": "Sanket"</br>
+&nbsp&nbsp  "email": "www.snk94@gmail.com",</br>
+  &nbsp&nbsp"password": "Madsan"</br>
+  &nbsp&nbsp}</br>
+&nbsp}</br>
+</div>
+<h3>Login</h3>
+<p>To login, we only require an email and password:</p>
+<p><br>POST /api/users/login<br></p>
+<div class="codes">
+&nbsp  {</br>
+&nbsp&nbsp "user":{</br>
+  &nbsp&nbsp"email": "www.snk94@gmail.com",</br>
+  &nbsp&nbsp"password": "Madsan"</br>
+ &nbsp&nbsp}</br>
+&nbsp}</br>
+</div>
+<h3>Showing public user data for profiles</h3>
+<p>What if we want to view the profile of another user on our site? We don't want to expose their email
+nor allow others to change their password, which is why those API endpoints are private. We'll need
+to create API endpoints that will only expose public data about the user.</p>
+<div class="codes">
+  &nbsp&nbsp{</br>
+  &nbsp"profile": {</br>
+    &nbsp"username": "Jake",</br>
+    &nbsp"bio": "I work in Microsoft",</br>
+    &nbsp"image": "https://static.productionready.io/images/smiley-cyrus.jpg",</br>
+    &nbsp"following": false</br>
+  &nbsp}</br>
+&nbsp&nbsp}</br>
+</div>
+</div>
+</div>
+
+<div class="col-lg-2">
+      <div class="sidebar">
+        <hr class="line-style">
+        <a href="#intro">Intro</a></br>
+        <hr class="line-style">
+        <a href="#error">Error</a></br>
+        <hr class="line-style">
+        <a href="#user">User Definition</a></br>
+        <hr class="line-style">
+      </div>
+</div>
+</div>
+</div>
+
+  </body>
+  </html>
