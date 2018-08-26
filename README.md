@@ -1,3 +1,7 @@
+#Project Description
+
+An app which books tickets for charging Electric Vehicle, once you get the ticket you are provided with a code which then submitted to the Electric Station will facilitate to charge your vehicle without any Human Intervention.
+
 # Cassandra
 Product based Payment
 
